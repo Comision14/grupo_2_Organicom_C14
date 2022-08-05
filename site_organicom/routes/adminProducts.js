@@ -4,7 +4,9 @@ const path = require('path');
 
 const multer = require('multer');
 let uploadFiles = require('../middleware/uploadFiles');
-const {offSession, soloAdmin} = require("../middleware/sessionCheck")
+const {offSession, soloAdmin} = require("../middleware/sessionCheck");
+
+const productValidator = require('../validations/productValidator');
 
 let {
    adminProducts,
@@ -23,7 +25,7 @@ router
    .get('/agregar', offSession, soloAdmin, agregarProducto)
 
    /* POST carga los datos al formulario */
-   .post('/agregarProducto', uploadFiles.single('imagenes'), create)
+   .post('/agregarProducto', uploadFiles.single('imagenes'), productValidator, create)
 
    .get('/editar/:id', offSession, soloAdmin, editarProducto)
 

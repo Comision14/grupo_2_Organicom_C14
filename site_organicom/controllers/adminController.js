@@ -48,13 +48,11 @@ module.exports = {
          .catch(error => console.log(error))
    },
    /*------------------ logica del subir un producto ------------------*/
-   create: (req, res, next) => { 
+   create: (req, res) => { 
       let {nombre, precio, descuento, categoria, marca, origen, descripcion, beneficios, preparacion} = req.body
-      let errors = validationResult(req)
-      if(req.body.producto){
-         if (errors.isEmpty() && (nombre, precio, categoria, marca, origen) !== "undefined" || undefined) {
+      let errors = validationResult(req);
+         if (errors.isEmpty()) {
             db.Producto.create({
-               producto : {
                   nombre,
                   precio,
                   descuento,
@@ -64,11 +62,8 @@ module.exports = {
                   descripcion,
                   beneficios,
                   preparacion
-               }
-                  
             })
             .then(producto=>{
-               /* if ((nombre, precio, categoria, marca, origen) === "undefined" || undefined)  { */
                   db.Imagen.create({
                      nombre: req.file ? req.file.filename : "default.png",
                      productoId: producto.id
@@ -78,34 +73,11 @@ module.exports = {
                      
                   })
                   .catch(errors => console.log(errors)); 
-               /* } else { */
-                  /* return res.send("fallo al cargar los datos)") */
-                  /* let categorias = db.Categoria.findAll();
-                  let origenes = db.Origen.findAll();
-                  let marcas = db.Marca.findAll();
-     
-
-                  Promise.all([categorias, origenes, marcas])
-         .then(([categorias,origenes,marcas]) => {
-            return res.render('admin/agregarProducto', {
-               session : req.session,
-               categorias,
-               marcas,
-               origenes,
-               old : req.body,
-               errors : errors.mapped()
-            })
-            .catch(errors => console.log(errors));
-         }) */
-               /* } */
-               
-            
+      
             }) 
-         }
       
       } else {
-         return res.send("fallo al cargar los datos")
-         /* let categorias = db.Categoria.findAll();
+         let categorias = db.Categoria.findAll();
          let origenes = db.Origen.findAll();
          let marcas = db.Marca.findAll();
          
@@ -116,18 +88,13 @@ module.exports = {
                   session : req.session,
                   categorias,
                   marcas,
-                  origenes
+                  origenes,
+                  errors : errors.mapped()
                });
                
             })
-            .catch(errors => console.log(errors)); */
-
-                  
-      }
-       
-      
-      next()
- 
+            .catch(errors => console.log(errors));
+      } 
    },
    /* ----------------------consultas a Alex <3----------------- */
    editarProducto: (req, res) => {
