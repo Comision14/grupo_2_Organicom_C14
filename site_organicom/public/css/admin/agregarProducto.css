@@ -67,6 +67,10 @@ h1 .titulo {
    color: red;
    font-size: small;
 }
+.agregar-form .obligatorios{
+   color: blue;
+   font-size: medium;
+}
 
 @media screen and (min-width: 596px) {
    .agregar-form {

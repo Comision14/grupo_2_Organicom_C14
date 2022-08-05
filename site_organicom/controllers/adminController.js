@@ -77,6 +77,7 @@ module.exports = {
             }) 
       
       } else {
+        /*  res.send(errors) */
          let categorias = db.Categoria.findAll();
          let origenes = db.Origen.findAll();
          let marcas = db.Marca.findAll();
@@ -146,7 +147,25 @@ module.exports = {
                   })
                }).catch(errors => console.log(errors))
          }else{
-            return res.send("no se han podido actualizar los datos")
+            let producto = db.Producto.findByPk(req.params.id,{
+               include : ['categoria','imagenes','marca','origen']
+            });
+            let categorias = db.Categoria.findAll();
+            let origenes = db.Origen.findAll();
+            let marcas = db.Marca.findAll();
+      
+            Promise.all([producto,categorias, origenes, marcas])
+               .then(([producto,categorias,origenes,marcas]) =>{
+                  res.render('admin/editarProductos', {
+                     producto,
+                     categorias,
+                     origenes,
+                     marcas,
+                     session : req.session,
+                     errors : errors.mapped()
+                  });
+               })
+               .catch(errors => console.log(errors))
          }  
       
      
