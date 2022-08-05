@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { validationResult } = require('express-validator')
 
 //const productos = require('./data/productos.json');
 
@@ -7,6 +8,7 @@ const path = require('path');
 
 const db = require("../database/models");
 const { Console } = require('console');
+;
 //REVISAR CONTROLLERS/DATA/DATAFS PARA ENTENDER
 
 //Si quieren cambiar nombres haganlo pero AVISEN --Alex <3
@@ -46,22 +48,90 @@ module.exports = {
          .catch(error => console.log(error))
    },
    /*------------------ logica del subir un producto ------------------*/
-   create: (req, res) => { 
+   create: (req, res, next) => { 
+      let {nombre, precio, descuento, categoria, marca, origen, descripcion, beneficios, preparacion} = req.body
+      let errors = validationResult(req)
+      if(req.body.producto){
+         if (errors.isEmpty() && (nombre, precio, categoria, marca, origen) !== "undefined" || undefined) {
+            db.Producto.create({
+               producto : {
+                  nombre,
+                  precio,
+                  descuento,
+                  categoria,
+                  marca,
+                  origen,
+                  descripcion,
+                  beneficios,
+                  preparacion
+               }
+                  
+            })
+            .then(producto=>{
+               /* if ((nombre, precio, categoria, marca, origen) === "undefined" || undefined)  { */
+                  db.Imagen.create({
+                     nombre: req.file ? req.file.filename : "default.png",
+                     productoId: producto.id
+                  }).then( () => {
+                      
+                        return res.redirect('/adminProducts'); 
+                     
+                  })
+                  .catch(errors => console.log(errors)); 
+               /* } else { */
+                  /* return res.send("fallo al cargar los datos)") */
+                  /* let categorias = db.Categoria.findAll();
+                  let origenes = db.Origen.findAll();
+                  let marcas = db.Marca.findAll();
+     
+
+                  Promise.all([categorias, origenes, marcas])
+         .then(([categorias,origenes,marcas]) => {
+            return res.render('admin/agregarProducto', {
+               session : req.session,
+               categorias,
+               marcas,
+               origenes,
+               old : req.body,
+               errors : errors.mapped()
+            })
+            .catch(errors => console.log(errors));
+         }) */
+               /* } */
+               
+            
+            }) 
+         }
+      
+      } else {
+         return res.send("fallo al cargar los datos")
+         /* let categorias = db.Categoria.findAll();
+         let origenes = db.Origen.findAll();
+         let marcas = db.Marca.findAll();
+         
    
-      db.Producto.create({
-         ...req.body,
-      })
-      .then(producto=>{
-         db.Imagen.create({
-            nombre: req.file ? req.file.filename : "default.png",
-            productoId: producto.id
-         }).then( () => {
-            return res.redirect('/adminProducts');
-         })
-      }).catch(errors => console.log(errors))
+         Promise.all([categorias, origenes, marcas])
+            .then(([categorias,origenes,marcas]) => {
+               return res.render('admin/agregarProducto', {
+                  session : req.session,
+                  categorias,
+                  marcas,
+                  origenes
+               });
+               
+            })
+            .catch(errors => console.log(errors)); */
+
+                  
+      }
+       
+      
+      next()
+ 
    },
    /* ----------------------consultas a Alex <3----------------- */
    editarProducto: (req, res) => {
+      
       let producto = db.Producto.findByPk(req.params.id,{
          include : ['categoria','imagenes','marca','origen']
       });
@@ -82,31 +152,37 @@ module.exports = {
          .catch(errors => console.log(errors))
    },
    update: (req, res) => {
+      let errors = validationResult(req)
+         if (errors.isEmpty()) {
+            db.Producto.findByPk(req.params.id, {
+               include : ['imagenes']
+            })
+               .then(producto => {
+                  db.Producto.update({
+                     ...req.body,
+                  },{
+                     where : {id : req.params.id}
+                  })
+                  .then(()=>{
       
-      db.Producto.findByPk(req.params.id, {
-         include : ['imagenes']
-      })
-         .then(producto => {
-            db.Producto.update({
-               ...req.body,
-            },{
-               where : {id : req.params.id}
-            })
-            .then(()=>{
-
-               db.Imagen.update(
-                  {
-                     nombre : req.file ? req.file.filename : producto.imagenes[0].nombre
-                  },
-                  {
-                     where : {productoId : req.params.id}
-                  }
-               ).then( () => {
-                  return res.redirect("/adminProducts");
-               })
-              
-            })
-         }).catch(errors => console.log(errors))
+                     db.Imagen.update(
+                        {
+                           nombre : req.file ? req.file.filename : producto.imagenes[0].nombre
+                        },
+                        {
+                           where : {productoId : req.params.id}
+                        }
+                     ).then( () => {
+                        return res.redirect("/adminProducts");
+                     })
+                    
+                  })
+               }).catch(errors => console.log(errors))
+         }else{
+            return res.send("no se han podido actualizar los datos")
+         }  
+      
+     
    },
    borrar: (req, res) => {
       
