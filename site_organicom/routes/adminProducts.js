@@ -33,6 +33,7 @@ router
    .put(
       '/editarProducto/:id',
       uploadFiles.single('imagenes'),
+      productValidator,
       update
    )
 

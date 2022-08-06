@@ -49,16 +49,17 @@ module.exports = {
    },
    /*------------------ logica del subir un producto ------------------*/
    create: (req, res) => { 
-      let {nombre, precio, descuento, categoria, marca, origen, descripcion, beneficios, preparacion} = req.body
+      let {nombre, precio, descuento, categoriaId, marcaId, origenId, descripcion, beneficios, preparacion} = req.body
       let errors = validationResult(req);
          if (errors.isEmpty()) {
+           /*  return req.send(req.body) */
             db.Producto.create({
                   nombre,
                   precio,
                   descuento,
-                  categoria,
-                  marca,
-                  origen,
+                  categoriaId,
+                  marcaId,
+                  origenId,
                   descripcion,
                   beneficios,
                   preparacion
@@ -77,7 +78,7 @@ module.exports = {
             }) 
       
       } else {
-        /*  res.send(errors) */
+         /* res.send(errors) */
          let categorias = db.Categoria.findAll();
          let origenes = db.Origen.findAll();
          let marcas = db.Marca.findAll();

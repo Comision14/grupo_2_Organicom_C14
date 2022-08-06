@@ -7,6 +7,7 @@
 </head>
 
 <body>
+    <script src="/js/admin/editarProducto.js"></script>
     <%- include("../users/login-lateral") %>
     <%- include("../partials/header") %>
     <%- include("../partials/carrito-lateral") %>
@@ -14,6 +15,7 @@
     <main>
         <form class="editar-form" action="/adminProducts/editarProducto/<%= producto.id %>?_method=PUT" method="POST" enctype="multipart/form-data">
 
+            <p class="obligatorios">Obligatorios los espacios que tengan *</p>
             <div class="input-contenedor">
                 <label for="imagenes">Subir imágen principal del producto (solo una)</label>
                 <input type="file" id="imagenes" name="imagenes" accept="image/*"  onchange="previsualizarImgEdit(event)">
@@ -23,10 +25,12 @@
                 <label for="nombre">Título del producto</label>
                 <input type="text" id="nombre" name="nombre" placeholder="Nombre del producto"
                     value="<%= producto.nombre %>">
+                    <small class="text-danger" id="errorNombre"><%= (locals.errors  && errors.nombre) ? errors.nombre.msg : "" %></small>
             </div>
             <div class="input-contenedor precio">
                 <label for="numer">Precio</label>
                 <input type="number" id="precio" name="precio" placeholder="ej: 150"  min="1" value="<%= producto.precio %>" />
+                <small class="text-danger" id="errorPrecio"><%= (locals.errors  && errors.precio) ? errors.precio.msg : "" %></small>
             </div>
             <div class="input-contenedor descuento">
                 <label for="numer">Descuento en %</label>
@@ -34,30 +38,33 @@
             </div>
             <div class="input-contenedor categoria">
                 <label for="categoria">Seleccione la categoria</label>
-                <select name="categoriaId" id="categoriaId">
+                <select name="categoriaId" id="categoria">
                    <option value="" >seleccione la categoria</option>
                    <% categorias.forEach(categoria => { %>
                       <option  value="<%= categoria.id %>" <%= categoria.id === producto.categoriaId && 'selected'%>  ><%= categoria.nombre %> </option>
                    <% }) %> 
                 </select>
+                <small class="text-danger" id="errorCategoria"><%= (locals.errors  && errors.categoria) ? errors.categoria.msg : "" %></small>
              </div>
              <div class="input-contenedor categoria">
                 <label for="categoria">Seleccione el origen</label>
-                <select name="origenId" id="origenId">
+                <select name="origenId" id="origen">
                    <option value="" >seleccione el origen</option>
                    <% origenes.forEach(origen => { %>
                       <option  value="<%= origen.id %>"  <%= origen.id === producto.origenId && 'selected'%>><%= origen.nombre %> </option>
                    <% }) %> 
                 </select>
+                <small class="text-danger" id="errorOrigen"><%= (locals.errors  && errors.origen) ? errors.origen.msg : "" %></small>
              </div>
              <div class="input-contenedor categoria">
                 <label for="categoria">Seleccione la marca</label>
-                <select name="marcaId" id="marcaId">
+                <select name="marcaId" id="marca">
                    <option value="" >seleccione la marca</option>
                    <% marcas.forEach(marca => { %>
                       <option  value="<%= marca.id %>"  <%= marca.id === producto.marcaId && 'selected'%>><%= marca.nombre %> </option>
                    <% }) %> 
                 </select>
+                <small class="text-danger" id="errorMarca"><%= (locals.errors  && errors.marca) ? errors.marca.msg : "" %></small>
              </div>
             <div class="input-contenedor">
                 <label for="descripcion">Descripción</label>
@@ -81,7 +88,7 @@
         </form>
         <form action="/adminProducts/delete/<%= producto.id %>?_method=DELETE" method="POST">
             <div class="input-contenedor">
-                <button type="submit">Eliminar producto</button>
+                <button type="submit" id="eliminar">Eliminar producto</button>
             </div>
         </form>
     </main>
