@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { validationResult } = require('express-validator')
 
 //const productos = require('./data/productos.json');
 
@@ -7,6 +8,7 @@ const path = require('path');
 
 const db = require("../database/models");
 const { Console } = require('console');
+;
 //REVISAR CONTROLLERS/DATA/DATAFS PARA ENTENDER
 
 //Si quieren cambiar nombres haganlo pero AVISEN --Alex <3
@@ -47,21 +49,58 @@ module.exports = {
    },
    /*------------------ logica del subir un producto ------------------*/
    create: (req, res) => { 
+      let {nombre, precio, descuento, categoriaId, marcaId, origenId, descripcion, beneficios, preparacion} = req.body
+      let errors = validationResult(req);
+         if (errors.isEmpty()) {
+           /*  return req.send(req.body) */
+            db.Producto.create({
+                  nombre,
+                  precio,
+                  descuento,
+                  categoriaId,
+                  marcaId,
+                  origenId,
+                  descripcion,
+                  beneficios,
+                  preparacion
+            })
+            .then(producto=>{
+                  db.Imagen.create({
+                     nombre: req.file ? req.file.filename : "default.png",
+                     productoId: producto.id
+                  }).then( () => {
+                      
+                        return res.redirect('/adminProducts'); 
+                     
+                  })
+                  .catch(errors => console.log(errors)); 
+      
+            }) 
+      
+      } else {
+         /* res.send(errors) */
+         let categorias = db.Categoria.findAll();
+         let origenes = db.Origen.findAll();
+         let marcas = db.Marca.findAll();
+         
    
-      db.Producto.create({
-         ...req.body,
-      })
-      .then(producto=>{
-         db.Imagen.create({
-            nombre: req.file ? req.file.filename : "default.png",
-            productoId: producto.id
-         }).then( () => {
-            return res.redirect('/adminProducts');
-         })
-      }).catch(errors => console.log(errors))
+         Promise.all([categorias, origenes, marcas])
+            .then(([categorias,origenes,marcas]) => {
+               return res.render('admin/agregarProducto', {
+                  session : req.session,
+                  categorias,
+                  marcas,
+                  origenes,
+                  errors : errors.mapped()
+               });
+               
+            })
+            .catch(errors => console.log(errors));
+      } 
    },
    /* ----------------------consultas a Alex <3----------------- */
    editarProducto: (req, res) => {
+      
       let producto = db.Producto.findByPk(req.params.id,{
          include : ['categoria','imagenes','marca','origen']
       });
@@ -82,31 +121,55 @@ module.exports = {
          .catch(errors => console.log(errors))
    },
    update: (req, res) => {
+      let errors = validationResult(req)
+         if (errors.isEmpty()) {
+            db.Producto.findByPk(req.params.id, {
+               include : ['imagenes']
+            })
+               .then(producto => {
+                  db.Producto.update({
+                     ...req.body,
+                  },{
+                     where : {id : req.params.id}
+                  })
+                  .then(()=>{
       
-      db.Producto.findByPk(req.params.id, {
-         include : ['imagenes']
-      })
-         .then(producto => {
-            db.Producto.update({
-               ...req.body,
-            },{
-               where : {id : req.params.id}
-            })
-            .then(()=>{
-
-               db.Imagen.update(
-                  {
-                     nombre : req.file ? req.file.filename : producto.imagenes[0].nombre
-                  },
-                  {
-                     where : {productoId : req.params.id}
-                  }
-               ).then( () => {
-                  return res.redirect("/adminProducts");
+                     db.Imagen.update(
+                        {
+                           nombre : req.file ? req.file.filename : producto.imagenes[0].nombre
+                        },
+                        {
+                           where : {productoId : req.params.id}
+                        }
+                     ).then( () => {
+                        return res.redirect("/adminProducts");
+                     })
+                    
+                  })
+               }).catch(errors => console.log(errors))
+         }else{
+            let producto = db.Producto.findByPk(req.params.id,{
+               include : ['categoria','imagenes','marca','origen']
+            });
+            let categorias = db.Categoria.findAll();
+            let origenes = db.Origen.findAll();
+            let marcas = db.Marca.findAll();
+      
+            Promise.all([producto,categorias, origenes, marcas])
+               .then(([producto,categorias,origenes,marcas]) =>{
+                  res.render('admin/editarProductos', {
+                     producto,
+                     categorias,
+                     origenes,
+                     marcas,
+                     session : req.session,
+                     errors : errors.mapped()
+                  });
                })
-              
-            })
-         }).catch(errors => console.log(errors))
+               .catch(errors => console.log(errors))
+         }  
+      
+     
    },
    borrar: (req, res) => {
       

@@ -63,7 +63,22 @@ h1 .titulo {
    color: var(--verde);
    font-weight: bolder;
 }
-
+.editar-form .img-edit {
+   display: block;
+   margin: 0 auto;
+   width: 70%;
+   height: 70%;
+   
+   
+}
+.editar-form .text-danger{
+   color: red;
+   font-size: small;
+}
+.editar-form .obligatorios{
+   color: blue;
+   font-size: medium;
+}
 @media screen and (min-width: 596px) {
    .editar-form {
       grid-template-columns: 1fr 1fr 1fr;

@@ -1,7 +1,6 @@
-const {check, body} = require("express-validator");
-const {} = require("../controllers/data/dataFS");
-const bcrypt = require("bcryptjs");
-const db = require("../database/models");
+const {check, body} = require("express-validator")
+const bcrypt = require("bcryptjs")
+const db = require("../database/models")
 
 
 module.exports=[
@@ -23,6 +22,4 @@ module.exports=[
         .notEmpty()
         .withMessage("debes ingresar una contraseña"),
 
-
-    
 ]
