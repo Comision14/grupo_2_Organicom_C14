@@ -19,9 +19,14 @@ module.exports = {
        telefono,
        password : bcrypt.hashSync(password,10),
        rol: 'user',
-       avatar : 'default.png'
         })    
-      .then(function(){        
+      .then(function(user){      
+        req.session.user = {
+          id : user.id,
+          nombre : user.nombre,          
+          avatar : user.avatar,
+          rol : user.rol
+      }  
           return res.redirect('/')
       })
     .catch(errors => console.log(errors))
@@ -97,7 +102,8 @@ login: (req, res, ) => {
     db.User.update(
       {
         nombre : req.body.nombre,
-        telefono : req.body.telefono
+        telefono : req.body.telefono,
+        avatar : req.file ? req.file.filename : req.session.user.avatar
       },
       {
         where : {
@@ -107,7 +113,8 @@ login: (req, res, ) => {
     )
       .then(() => {
         req.session.user.nombre = req.body.nombre;
-        return res.redirect('/users/userEdit')
+        req.session.user.avatar = req.file ? req.file.filename : req.session.user.avatar
+        return res.redirect('/')
       })
       .catch(error => console.log(error))
   }

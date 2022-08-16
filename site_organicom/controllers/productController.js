@@ -10,12 +10,43 @@ module.exports = {
       db.Producto.findByPk(req.params.id,{
          include : ["categoria", "imagenes", "origen", "marca"]
       })
-      .then(producto => {
-         /* res.send(producto) */
-         return res.render('detalleProducto',{
-            producto, 
-            session: req.session 
+      .then(async (producto) => {
+         let productosCategoria = await db.Producto.findAll({
+            where : {
+               categoriaId : producto.categoriaId,
+               id : {[Op.notLike] : producto.id}
+            },
+            include : ["categoria", "imagenes", "origen", "marca"],
+            limit : 4
          });
+         let productosMarca = await db.Producto.findAll({
+            where : {
+               marcaId : producto.marcaId,
+               id : {[Op.notLike] : producto.id}
+
+            },
+            include : ["categoria", "imagenes", "origen", "marca"],
+            limit : 4
+         });
+
+         let productosOrigen = await db.Producto.findAll({
+            where : {
+               origenId : producto.origenId,
+               id : {[Op.notLike] : producto.id}
+
+            },
+            include : ["categoria", "imagenes", "origen", "marca"],
+            limit : 4
+         });
+            
+         return res.render('detalleProducto',{
+               producto,
+               productosCategoria,
+               productosMarca,
+               productosOrigen,
+               session: req.session 
+            });
+        
       })
       .catch(errors => console.log(errors))
       /* const producto = productos.find((prod) => {
@@ -59,11 +90,11 @@ module.exports = {
    // Categoria
    categorie: (req, res, next) => {
       
-     db.Categoria.findAll({
+     db.Categoria.findOne({
       include : [
         {
            association : "productos",
-           include : ['imagenes',"origen","marca"]
+           include : ['imagenes',"origen","marca","categoria"]
         }
      
      ],
@@ -72,7 +103,7 @@ module.exports = {
       }
     })
       .then(categoria =>{
-         /* return res.send(categoria) */
+         console.log(categoria)
          res.render("categorias",{
             categoria,
             session : req.session

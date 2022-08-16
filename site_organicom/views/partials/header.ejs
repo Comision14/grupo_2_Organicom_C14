@@ -17,7 +17,7 @@
    <% }else{ %>
    <a href="/users/userEdit" >
       <button style="position:relative;">
-         <img src="/assets/img/usuario-icono.svg" class="usuario-icono" />
+         <img style="border-radius: 50%;" src="/imgs/users_images/<%= session.user.avatar ? session.user.avatar : 'usuario-icono.svg' %>" class="usuario-icono" />
          <span> <%= session.user.nombre %> </span>
       </button>
    </a>

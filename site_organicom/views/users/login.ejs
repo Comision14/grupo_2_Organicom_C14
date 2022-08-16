@@ -18,6 +18,8 @@
       <form class="register-form" action="/users/userLogin" method="POST">
          <div class="encabezado">
             <h1 class="titulo">Inicio de sesión</h1>
+            <p style="text-align: center; color:red"><%= locals.errors && errors.email ? errors.email.msg : null %> </p>      
+
          </div>
          <div class="register-main">
             <label for="email">Email</label>
@@ -32,13 +34,12 @@
                 <input type="checkbox" name="recuerdame" id="recuerdame" checked>
                 Recuerdame
              </label>
-             <a href="">Olvidé mi contraseña</a>
+             <p>¿No estás registrado? <a href="/users/register">Registrate</a></p>
          </div>
          <div class="register-main button-register">          
             <button type="submit">
                Ingresar
             </button>
-            <span><%= locals.errors && errors.email ? errors.email.msg : null %> </span>      
          </div>
       </form>
    </main>

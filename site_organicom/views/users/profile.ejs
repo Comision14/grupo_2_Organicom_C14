@@ -18,9 +18,10 @@
  
     <main class="form_box">
        
-            <form class="profile-form" action="/users/userUpdate?_method=PUT" method="POST">
+            <form class="profile-form" action="/users/userUpdate?_method=PUT" method="POST" enctype="multipart/form-data">
                 <div class='img_profile-box'>
-                    <img src="/assets/img/usuario-icono.svg" alt='' class="img_user-profile">
+                    <label for="avatar" style="cursor: pointer;"> <img style="border-radius: 50%;" id="avatar-preview" src="/imgs/users_images/<%= user.avatar ? user.avatar : 'usuario-icono.svg' %>" alt='perfil' class="img_user-profile"></label>
+                    <input name="avatar" type="file" id="avatar" hidden onchange="showPreview(event)">
                 </div>
             
                    <h1 class="profile-title">Perfil</h1>
@@ -38,16 +39,28 @@
                    <input class="profile-main" type="text" id="telefono" name="telefono"
                       placeholder="Escriba su numero(opcional)." value="<%= user.telefono %>">
                 
-                      
-                   <button type="submit" class="profile-main button-profile">
-                      Guardar
-                   </button>       
+                      <div style="display: flex; gap: 5px;">
+                           <a style="text-decoration: none;text-align:center" href="/users/logout" class="profile-main button-profile">Cerrar sesión</a> 
+                       <button type="submit" class="profile-main button-profile">
+                          Guardar
+                       </button>       
+                      </div>
+                    
                 
              </form>
     </main>
 
     <%- include("../partials/footer") %>
     <script src="/js/general.js"></script>
-
+    <script>
+        const showPreview = ({target}) => {
+            let reader = new FileReader();
+            reader.readAsDataURL(target.files[0])
+            reader.onload = () => {
+                document.getElementById('avatar-preview').src = reader.result
+            }
+        }
+       
+    </script>
 </body>
 </html>

@@ -3,7 +3,7 @@ const router = express.Router();
 const path = require('path');
 
 const multer = require('multer');
-let uploadFiles = require('../middleware/uploadFiles');
+let {uploadFile} = require('../middleware/uploadFiles');
 const {offSession, soloAdmin} = require("../middleware/sessionCheck");
 
 const productValidator = require('../validations/productValidator');
@@ -25,14 +25,14 @@ router
    .get('/agregar', offSession, soloAdmin, agregarProducto)
 
    /* POST carga los datos al formulario */
-   .post('/agregarProducto', uploadFiles.single('imagenes'), productValidator, create)
+   .post('/agregarProducto', uploadFile.single('imagenes'), productValidator, create)
 
    .get('/editar/:id', offSession, soloAdmin, editarProducto)
 
    /* PUT actualiza los datos */
    .put(
       '/editarProducto/:id',
-      uploadFiles.single('imagenes'),
+      uploadFile.single('imagenes'),
       productValidator,
       update
    )

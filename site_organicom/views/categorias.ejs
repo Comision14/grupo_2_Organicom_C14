@@ -6,7 +6,8 @@
       title: "Fideos y Cereales"
    }) %>
 
-   <link rel="stylesheet" href="/css/categorias.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.0.2/dist/css/splide-core.min.css">
+<link rel="stylesheet" href="/css/productos.css">
 </head>
 
 <body>
@@ -14,76 +15,69 @@
    <%- include("./partials/header") %>
    <%- include("./partials/carrito-lateral") %>
 
-   <main>
-      <div class="hero-categoria">
+   <% if (categoria.id === 1) { %>
+    
+      <main style="background-image: url('/assets/img/hero-frutos-secos.jpg'); padding: 20px 0;">
 
-         <% if ( categoria.id === 3) { %>
+   <% } else if (categoria.id === 3) { %>
+      <main style="background-image: url('/assets/img/hero-fideos.webp'); padding: 20px 0;">
 
-         <img src="/assets/img/hero-fideos.webp" alt>
+   <% } else if (categoria.id === 2) { %>
+      <main style="background-image: url('/assets/img/hero-infusiones.jpg'); padding: 20px 0;">
 
-      </div>
-      <div class="grid-principal">
-         <h1>Fideos y Cereales</h1>
-         <% } else if (categoria.id === 1) { %>
-         <img src="/assets/img/hero-frutos-secos.jpg" alt>
+   <% } else if (categoria.id === 4) { %>
+      <main style="background-image: url('/assets/img/hero-jugos.jpg'); padding: 20px 0;">
 
-      </div>
-      <div class="grid-principal">
-         <h1>Frutos secos</h1>
-         <% } else if (categoria.id === 4) { %>
-         <img src="/assets/img/hero-jugos.jpg" alt>
+   <% } %>
 
-      </div>
-      <div class="grid-principal">
-         <h1>Jugos y Bebidas</h1>
-         <% } else if (categoria.id === 2) { %>
-         <img src="/assets/img/hero-infusiones.jpg" alt>
+            <h2 style="background-color: rgba(33,47,61,0.4); color:snow; padding: 20px;">
+               <%= categoria.nombre.toUpperCase() %> 
+            </h2>
+      <div class="lista-productos-general" >
+         <% categoria.productos.forEach(productos => { %> 
 
-      </div>
-
-
-      <div class="grid-principal">
-         <h1>Infusiones</h1>
-         <% } %>
-
-
-         <% categoria.forEach(producto => { %>
-            
-         <article class="card">
-            <div class="card-header">
-               <img src="/imgs/products_images/<%= producto.imagenes ? producto.imagenes.name : 'default.png' %>" alt>
-               <div class="favorito"></div>
+        <a class="a-general" href="/products/detalleProducto/<%= productos.id %> "><article class="card-general">
+            <div class="card-header-general">
+                <!-- <img src="/assets/img/<%#= producto.imagen %>" alt> -->
+                <img src="/imgs/products_images/<%= productos.imagenes[0].nombre%>" alt>
             </div>
-            <div class="card-body">
-               <a href="/products/detalleProducto/<%= producto.id %>">
-                  <h3><%= producto.nombre %> </h3>
-                  <p class="precio-inicial">
-                     <% if (producto.descuento) { %>
-                     <span>$<%= producto.precio %></span>
-                     <span class="descuento">
-                        <%= producto.descuento %>%OFF!
-                     </span>
-                     <% } %>
-                  </p>
-                  <p class="precio-final">
-                     $ <%= producto.descuento ? 
-                        Math.trunc(+producto.precio - (+producto.precio * +producto.descuento / 100)) :
-                        Math.trunc(producto.precio) %>.00
-                  </p>
-                  <!-- <p class="precio-secundario">$ <%#= producto.precio %>.00 x 1Kg</p> -->
-               </a>
-               <div class="botones">
-                  <button class="btn-agregar" type="button">Agregar <span class="icono"></span></button>
-               </div>
+            <div class="card-body-general">
+                <h3><%= productos.nombre %></h3>
+                <p class="precio-inicial-general">
+                    <% if (productos.descuento) { %>
+                    <span>$<%= productos.precio %></span>
+                    <span class="descuento-general">
+                        <%= productos.descuento %>%OFF!
+                    </span>
+                    <% } %>
+                </p>
+                <p class="precio-final-general">
+                    $ <%= productos.descuento ? 
+                        Math.trunc(+productos.precio - (+productos.precio * +productos.descuento / 100)) :
+                        Math.trunc(productos.precio) %>.00
+                </p>
+                <span class="categoria-general"><%= productos.categoria.nombre %></span>
+                <!-- <div class="botones-general">
+                    <a href="/products/detalleProducto/<%= productos.id %> ">
+                        <button class="btn-editar-general" type="button">Ver mas <span class="icono-general"></span></button>
+                    </a>
+                </div> -->
             </div>
-         </article>
-         <% }) %>
-      </div>
+        </article></a>
+         <% }); %> 
+
+
+
+    </div>
+       
    </main>
 
    <%- include("./partials/footer") %>
 
+   <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.0.2/dist/js/splide.min.js"></script>
    <script src="/js/general.js"></script>
+   <script src="/js/home.js"></script>
+
 </body>
 
 </html>
